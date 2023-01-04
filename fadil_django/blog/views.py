@@ -1,31 +1,53 @@
+from django import forms
 from django.shortcuts import render
 from .models import Post
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+
 # Create your views here.
+
+# def articles(request,year):
+#     year=year
+#     str=year
+#     return HttpResponse(year)
+
+
 def index(request):
     db = Post.objects.all()
     context = {
         'title':'Blog',
         'heading':'Blog',
         'subheading':'postingan',
-        'post':db,
+        'post': db,
     }
-    return render (request, 'blog/index.html',context)
+    return render (request, 'blog/index.html', context)
 
 def recent(request):
-    return HttpResponse("ini blog")
+    return HttpResponse("RECENT")
 
+# def post(request):
+#     return HttpResponse("ini pos")
 
-def form(request):
-    context = {
-        'nama':'nama',
-        'alamat':'alamat',
-        'post':form,
+def delete(request, id):
+    Post.objects.filter(id=id).delete()
+    return HttpResponseRedirect('/blog/')
+
+def update(request, id):
+    updt = Post.objects.get(id=id)
+    data = {
+        'title' : updt.title,
+        'body' : updt.body,
+        'email' : updt.email,
     }
-    if request.method == 'POST':
-        print("ini adalah method post")
-        context['nama'] = request.POST['nama']
-        context['alamat'] = request.POST['alamat']
-    else:
-        print("ini adalah method get")
-    return render (request, 'blog/form.html',context)
+    classform = forms.classform(request.POST or None, initial=data, instance=updt)
+    
+    if request.method =='POST':
+        if classform.is_valid():
+            classform.save()
+            return HttpResponseRedirect('/blog/')
+        
+        
+    context = {
+        'heading':'Updt',
+        'classform': classform
+    }
+    return render(request, 'form.html', context)

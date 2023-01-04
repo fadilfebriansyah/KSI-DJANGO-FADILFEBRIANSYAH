@@ -16,10 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.http import HttpResponse
-
-from . import views
-
 from blog.views import index
+from django import forms
 
 from . import views
 
@@ -28,6 +26,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls', namespace='blog')),
     path('about/', include('about.urls', namespace='about')),
-    re_path(r'^articles/(?P<year>[0-9]{4})/$', views.articles),
+    path('form/', views.form, name='form'),
+    re_path(r'^articles/(?P<year>[0-9]{4})/$', views.articles, name='dinamis'),
+    re_path(r'^delete/(?P<id>[0-9]+)/$', views.delete, name='delete'),
+    re_path(r'^update/(?P<id>[0-9]+)/$', views.update, name='update'),
     path('', index),
     ]
